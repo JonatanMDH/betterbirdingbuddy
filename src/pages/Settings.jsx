@@ -1,27 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getSession, saveSession, clearSession } from '../lib/auth.js';
+import { getSession, getCsrf, saveCredentials, clearSession } from '../lib/auth.js';
 import { useT, useLang } from '../App.jsx';
 
 export default function Settings({ onTokenSaved }) {
   const t = useT();
   const lang = useLang();
-  const [input,   setInput]   = useState('');
+  const [sessionInput, setSessionInput] = useState('');
+  const [csrfInput,    setCsrfInput]    = useState('');
   const [status,  setStatus]  = useState(null);
   const [message, setMessage] = useState('');
   const [current, setCurrent] = useState(null);
 
   useEffect(() => {
     const s = getSession();
+    const c = getCsrf();
     setCurrent(s);
-    if (s) setInput(s);
+    if (s) setSessionInput(s);
+    if (c) setCsrfInput(c);
   }, []);
 
-  const test = async (val) => {
+  const test = async (s, c) => {
     setStatus('testing'); setMessage('');
     try {
-      const res = await fetch('/api/fetch?userId=57388&start=2026-01-01&end=2026-04-17',
-        { headers: { 'X-Wnmg-Session': val } });
+      const headers = {};
+      if (s) headers['X-Wnmg-Session'] = s;
+      if (c) headers['X-Wnmg-Csrf']    = c;
+      const res = await fetch('/api/fetch?userId=57388&start=2026-01-01&end=2026-04-17', { headers });
       const data = await res.json();
       if (res.ok) {
         setStatus('ok');
@@ -37,13 +42,13 @@ export default function Settings({ onTokenSaved }) {
   };
 
   const save = async () => {
-    const val = input.trim();
-    if (!val) return;
-    const ok = await test(val);
-    if (ok) { saveSession(val); setCurrent(val); onTokenSaved?.(); }
+    const s = sessionInput.trim();
+    if (!s) return;
+    const ok = await test(s, csrfInput.trim());
+    if (ok) { saveCredentials(s, csrfInput.trim()); setCurrent(s); onTokenSaved?.(); }
   };
 
-  const clear = () => { clearSession(); setCurrent(null); setInput(''); setStatus(null); };
+  const clear = () => { clearSession(); setCurrent(null); setSessionInput(''); setCsrfInput(''); setStatus(null); };
 
   const steps = lang === 'nl' ? [
     { n:'01', title:'Log in op waarneming.nl',        body: <>Open <a href="https://waarneming.nl" target="_blank" rel="noopener noreferrer" className="bbb-link">waarneming.nl</a> in je browser en zorg dat je bent ingelogd.</> },
@@ -95,15 +100,20 @@ export default function Settings({ onTokenSaved }) {
 
       <div className="bbb-settings-card">
         <div className="bbb-settings-card-title">
-          {lang === 'nl' ? 'Jouw sessie-ID' : 'Your session ID'}
+          {lang === 'nl' ? 'Jouw cookies' : 'Your cookies'}
         </div>
-        <label className="bbb-label" style={{ marginTop: 12 }}>
-          {lang === 'nl' ? 'Plak de waarde van sessionid hier' : 'Paste the sessionid value here'}
-        </label>
-        <textarea className="bbb-input" rows={2}
-          placeholder="abc123xyz..."
-          value={input}
-          onChange={e => { setInput(e.target.value); setStatus(null); }} />
+
+        <label className="bbb-label" style={{ marginTop: 12 }}>sessionid</label>
+        <input className="bbb-input" style={{ fontFamily: 'monospace', fontSize: 13 }}
+          placeholder="xya7ar3xoh8uesxyecelb3fcqe1j6ycr"
+          value={sessionInput}
+          onChange={e => { setSessionInput(e.target.value); setStatus(null); }} />
+
+        <label className="bbb-label" style={{ marginTop: 12 }}>csrftoken</label>
+        <input className="bbb-input" style={{ fontFamily: 'monospace', fontSize: 13 }}
+          placeholder="yUry575ngngfdoI1qsWkrIgIi4ozBawR"
+          value={csrfInput}
+          onChange={e => { setCsrfInput(e.target.value); setStatus(null); }} />
 
         {status === 'testing' && <div className="bbb-loading" style={{ padding:'12px 0', textAlign:'left' }}>{lang === 'nl' ? 'Verbinding testen…' : 'Testing connection…'}</div>}
         {status === 'ok'    && <div className="bbb-alert success" style={{ marginTop:10 }}>{message}</div>}

@@ -1,13 +1,15 @@
-import { getSession } from './auth.js';
+import { getSession, getCsrf } from './auth.js';
 
 // ─── Real API ─────────────────────────────────────────────────────────────────
 
 export async function fetchObservations(userId, start, end) {
   const session = getSession();
+  const csrf    = getCsrf();
   const url = `/api/fetch?userId=${encodeURIComponent(userId)}&start=${start}&end=${end}`;
-  const res = await fetch(url, {
-    headers: session ? { 'X-Wnmg-Session': session } : {},
-  });
+  const headers = {};
+  if (session) headers['X-Wnmg-Session'] = session;
+  if (csrf)    headers['X-Wnmg-Csrf']    = csrf;
+  const res = await fetch(url, { headers });
   let data;
   try { data = await res.json(); } catch { data = null; }
   if (!res.ok) {

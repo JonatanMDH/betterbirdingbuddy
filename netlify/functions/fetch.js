@@ -40,7 +40,8 @@ export default async (req) => {
   if (!end    || !/^\d{4}-\d{2}-\d{2}$/.test(end))   return json(400, { error: 'Ongeldige einddatum' });
 
   // Accept session cookie OR bearer token from the browser
-  const sessionId = req.headers.get('x-wnmg-session');
+  const sessionId  = req.headers.get('x-wnmg-session');
+  const csrfToken  = req.headers.get('x-wnmg-csrf');
   const bearerToken = req.headers.get('x-wnmg-token') || process.env.WNMG_ACCESS_TOKEN;
 
   if (!sessionId && !bearerToken) {
@@ -60,8 +61,8 @@ export default async (req) => {
 
   try {
     const [user, observations] = await Promise.all([
-      fetchUser(userId, bearerToken, sessionId),
-      fetchUserObservations(userId, start, end, bearerToken, sessionId),
+      fetchUser(userId, bearerToken, sessionId, csrfToken),
+      fetchUserObservations(userId, start, end, bearerToken, sessionId, csrfToken),
     ]);
     const result = { user, observations };
     cacheSet(cacheKey, result);

@@ -1,10 +1,8 @@
-// Stores the user's waarneming.nl session cookie in localStorage.
-// The session cookie is found in DevTools → Application → Cookies — much
-// easier than finding a Bearer token in network requests.
-
 const SESSION_KEY = 'wnmg_session';
+const CSRF_KEY    = 'wnmg_csrf';
 
-export function getSession()        { return localStorage.getItem(SESSION_KEY) || null; }
-export function saveSession(val)    { localStorage.setItem(SESSION_KEY, val.trim()); }
-export function clearSession()      { localStorage.removeItem(SESSION_KEY); }
-export function hasSession()        { return Boolean(getSession()); }
+export function getSession()            { return localStorage.getItem(SESSION_KEY) || null; }
+export function getCsrf()               { return localStorage.getItem(CSRF_KEY) || null; }
+export function saveCredentials(s, c)   { localStorage.setItem(SESSION_KEY, s.trim()); if (c) localStorage.setItem(CSRF_KEY, c.trim()); }
+export function clearSession()          { localStorage.removeItem(SESSION_KEY); localStorage.removeItem(CSRF_KEY); }
+export function hasSession()            { return Boolean(getSession()); }

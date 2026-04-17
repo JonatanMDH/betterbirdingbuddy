@@ -4,23 +4,34 @@
 
 const BASE = 'https://waarneming.nl/api/v1';
 
-function authHeaders(token, sessionId) {
+function authHeaders(token, sessionId, csrfToken) {
   if (token) {
-    return { Authorization: `Bearer ${token}`, 'Accept-Language': 'nl' };
+    return {
+      Authorization: `Bearer ${token}`,
+      'Accept-Language': 'nl',
+    };
   }
   if (sessionId) {
-    // Use session cookie exactly as the waarneming.nl website does
-    return { Cookie: `sessionid=${sessionId}`, 'Accept-Language': 'nl' };
+    const cookieParts = [`sessionid=${sessionId}`];
+    if (csrfToken) cookieParts.push(`csrftoken=${csrfToken}`);
+    return {
+      Cookie:          cookieParts.join('; '),
+      Referer:         'https://waarneming.nl/',
+      Origin:          'https://waarneming.nl',
+      'User-Agent':    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+      'Accept-Language': 'nl',
+      'X-Requested-With': 'XMLHttpRequest',
+    };
   }
   return { 'Accept-Language': 'nl' };
 }
 
-async function apiFetch(path, token, sessionId, params = {}) {
+async function apiFetch(path, token, sessionId, csrfToken, params = {}) {
   const url = new URL(`${BASE}${path}`);
   for (const [k, v] of Object.entries(params)) {
     if (v !== undefined && v !== null) url.searchParams.set(k, String(v));
   }
-  const res = await fetch(url, { headers: authHeaders(token, sessionId) });
+  const res = await fetch(url, { headers: authHeaders(token, sessionId, csrfToken) });
   if (!res.ok) {
     const body = await res.text();
     throw new Error(`waarneming.nl ${path} → ${res.status}: ${body.slice(0, 200)}`);
@@ -28,26 +39,25 @@ async function apiFetch(path, token, sessionId, params = {}) {
   return res.json();
 }
 
-export async function fetchUser(userId, token, sessionId) {
+export async function fetchUser(userId, token, sessionId, csrfToken) {
   try {
-    const data = await apiFetch(`/users/${userId}/`, token, sessionId);
+    const data = await apiFetch(`/users/${userId}/`, token, sessionId, csrfToken);
     return {
       id:   String(userId),
       name: data.name || data.username || `Gebruiker #${userId}`,
     };
   } catch {
-    // User profile endpoint may not exist — fall back to ID as name
     return { id: String(userId), name: `Gebruiker #${userId}` };
   }
 }
 
-export async function fetchUserObservations(userId, dateAfter, dateBefore, token, sessionId) {
+export async function fetchUserObservations(userId, dateAfter, dateBefore, token, sessionId, csrfToken) {
   const all = [];
   let offset = 0;
   const LIMIT = 100;
 
   while (true) {
-    const data = await apiFetch(`/users/${userId}/observations/`, token, sessionId, {
+    const data = await apiFetch(`/users/${userId}/observations/`, token, sessionId, csrfToken, {
       species_group: 1,
       date_after:    dateAfter,
       date_before:   dateBefore,
