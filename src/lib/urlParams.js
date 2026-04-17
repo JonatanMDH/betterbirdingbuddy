@@ -8,6 +8,12 @@ export const DEFAULT_STATE = {
   mode: 'they-not-me',
   start: null,
   end: null,
+  demo: false,
+};
+
+export const DEMO_IDS = {
+  me: '57388',
+  buddies: ['43083', '24601', '13579', '97531'],
 };
 
 export function parseIdFromInput(raw) {
@@ -27,8 +33,9 @@ export function stateFromSearchParams(params) {
   const mode     = params.get('mode') || DEFAULT_STATE.mode;
   const start    = params.get('start');
   const end      = params.get('end');
+  const demo     = params.get('demo') === '1';
 
-  return { me, buddies, period, mode, start, end };
+  return { me, buddies, period, mode, start, end, demo };
 }
 
 export function stateToQueryString(state) {
@@ -39,6 +46,7 @@ export function stateToQueryString(state) {
   if (state.mode && state.mode !== DEFAULT_STATE.mode) p.set('mode', state.mode);
   if (state.period === 'custom' && state.start) p.set('start', state.start);
   if (state.period === 'custom' && state.end)   p.set('end', state.end);
+  if (state.demo) p.set('demo', '1');
   const s = p.toString();
   return s ? `?${s}` : '';
 }

@@ -5,7 +5,7 @@ import Home from './pages/Home.jsx';
 import Compare from './pages/Compare.jsx';
 import Settings from './pages/Settings.jsx';
 import { stateFromSearchParams, isRunnable } from './lib/urlParams.js';
-import { hasToken } from './lib/auth.js';
+import { hasSession } from './lib/auth.js';
 import { T } from './lib/i18n.js';
 
 export const LangCtx = createContext('nl');
@@ -14,7 +14,7 @@ export const useLang = () => useContext(LangCtx);
 
 export default function App() {
   const [params] = useSearchParams();
-  const [tokenOk, setTokenOk] = useState(hasToken());
+  const [tokenOk, setTokenOk] = useState(hasSession());
   const [lang, setLang] = useState('nl');
 
   const page = params.get('page');

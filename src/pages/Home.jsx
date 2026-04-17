@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { parseIdFromInput, stateToQueryString } from '../lib/urlParams.js';
-import { useT } from '../App.jsx';
+import { parseIdFromInput, stateToQueryString, DEMO_IDS } from '../lib/urlParams.js';
+import { useT, useLang } from '../App.jsx';
 
 export default function Home({ state }) {
   const t = useT();
+  const lang = useLang();
   const navigate = useNavigate();
   const [myInput, setMyInput] = useState(state?.me || '');
   const [buddies, setBuddies] = useState(() => {
@@ -66,7 +67,17 @@ export default function Home({ state }) {
             </div>
           </div>
           {error && <div className="bbb-error">{error}</div>}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 20 }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 12, marginTop: 20, flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              className="bbb-btn-secondary"
+              onClick={() => {
+                const qs = stateToQueryString({ me: DEMO_IDS.me, buddies: DEMO_IDS.buddies, period: 'last-7', mode: 'they-not-me', demo: true });
+                navigate(`/${qs}`);
+              }}
+            >
+              {lang === 'nl' ? 'Probeer demo' : 'Try demo'}
+            </button>
             <button className="bbb-btn-primary" type="submit">
               {t.compareBtn}
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ marginLeft: 6 }}>

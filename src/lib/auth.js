@@ -1,21 +1,10 @@
-// Manages the user's waarneming.nl Bearer token in localStorage.
-// The token is extracted once from the browser DevTools (see Settings page)
-// and stored locally. It's sent with every fetch request.
+// Stores the user's waarneming.nl session cookie in localStorage.
+// The session cookie is found in DevTools → Application → Cookies — much
+// easier than finding a Bearer token in network requests.
 
-const KEY = 'wnmg_token';
+const SESSION_KEY = 'wnmg_session';
 
-export function getToken() {
-  return localStorage.getItem(KEY) || null;
-}
-
-export function saveToken(token) {
-  localStorage.setItem(KEY, token.trim());
-}
-
-export function clearToken() {
-  localStorage.removeItem(KEY);
-}
-
-export function hasToken() {
-  return Boolean(getToken());
-}
+export function getSession()        { return localStorage.getItem(SESSION_KEY) || null; }
+export function saveSession(val)    { localStorage.setItem(SESSION_KEY, val.trim()); }
+export function clearSession()      { localStorage.removeItem(SESSION_KEY); }
+export function hasSession()        { return Boolean(getSession()); }

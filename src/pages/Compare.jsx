@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { fetchObservations } from '../lib/api.js';
+import { fetchObservations, fetchObservationsDemo } from '../lib/api.js';
 import { compare, resolvePeriod, historyRangeForMode } from '../lib/compare.js';
 import { stateToQueryString } from '../lib/urlParams.js';
 import { formatDate } from '../lib/format.js';
@@ -22,7 +22,11 @@ export default function Compare({ state }) {
   const t = useT();
   const lang = useLang();
   const navigate = useNavigate();
-  const { me, buddies, period, mode, start: customStart, end: customEnd } = state;
+  const { me, buddies, period, mode, start: customStart, end: customEnd, demo } = state;
+
+  const fetchFn = demo
+    ? (userId) => fetchObservationsDemo(userId)
+    : (userId, start, end) => fetchCached(userId, start, end);
 
   const range = useMemo(() => resolvePeriod(period, customStart, customEnd), [period, customStart, customEnd]);
   const historyRange = useMemo(() => historyRangeForMode(mode, range.start, range.end), [mode, range.start, range.end]);
@@ -38,9 +42,9 @@ export default function Compare({ state }) {
     (async () => {
       try {
         const [meResult, ...buddyResults] = await Promise.all([
-          fetchCached(me, historyRange.start, historyRange.end).catch(err => { throw err; }),
+          fetchFn(me, historyRange.start, historyRange.end).catch(err => { throw err; }),
           ...buddies.map(id =>
-            fetchCached(id, range.start, range.end)
+            fetchFn(id, range.start, range.end)
               .then(data => ({ id, data }))
               .catch(err  => ({ id, error: err.message, needsToken: err.needsToken }))
           ),
@@ -89,6 +93,13 @@ export default function Compare({ state }) {
 
   return (
     <div className="bbb-fade">
+      {demo && (
+        <div className="bbb-alert" style={{ marginBottom: 0, borderRadius: 0, margin: '0 -20px', borderLeft: 'none', borderRight: 'none' }}>
+          {lang === 'nl'
+            ? <>🔍 <b>Demomodus</b> — voorbeelddata, geen echte waarnemingen. <a href="/?page=settings" className="bbb-link">Verbind je account</a> voor echte data.</>
+            : <>🔍 <b>Demo mode</b> — sample data, not real observations. <a href="/?page=settings" className="bbb-link">Connect your account</a> for real data.</>}
+        </div>
+      )}
       {/* Toolbar */}
       <div className="bbb-toolbar">
         <button className="bbb-back-btn" onClick={() => navigate('/')}>
