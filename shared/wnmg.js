@@ -29,11 +29,16 @@ async function apiFetch(path, token, sessionId, params = {}) {
 }
 
 export async function fetchUser(userId, token, sessionId) {
-  const data = await apiFetch(`/users/${userId}/`, token, sessionId);
-  return {
-    id:   String(userId),
-    name: data.name || data.username || `Gebruiker #${userId}`,
-  };
+  try {
+    const data = await apiFetch(`/users/${userId}/`, token, sessionId);
+    return {
+      id:   String(userId),
+      name: data.name || data.username || `Gebruiker #${userId}`,
+    };
+  } catch {
+    // User profile endpoint may not exist — fall back to ID as name
+    return { id: String(userId), name: `Gebruiker #${userId}` };
+  }
 }
 
 export async function fetchUserObservations(userId, dateAfter, dateBefore, token, sessionId) {
