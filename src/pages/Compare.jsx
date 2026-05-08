@@ -111,6 +111,8 @@ function BuddyCard({ buddy, result, lang }) {
         <div style={{ minWidth: 0 }}>
           <div className="bbb-col-name" title={buddy.name}>{buddy.name}</div>
           <div className="bbb-col-sub">
+            {buddy.observations.length} {lang === 'nl' ? 'obs. geladen' : 'obs. loaded'}
+            {' · '}
             {result.buddyInPeriod} {lang === 'nl' ? 'soorten in periode' : 'species in period'}
           </div>
         </div>

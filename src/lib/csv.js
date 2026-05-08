@@ -66,10 +66,11 @@ export function parseWaarnemingCSV(text, filename) {
   if (!name || name.length < 2) name = filename.replace(/\.csv$/i, '');
 
   const observations = rows
-    .filter(r => r['species group'] === 'Vogels' && r['species name'] && r['date'])
+    // Filter to rows that have a species name and date — don't rely on species group
+    // matching exactly, since Excel re-saves can subtly alter column values
+    .filter(r => r['species name'] && r['date'])
     .map(r => ({
-      // Use lowercased species name as a stable ID (no numeric ID in export)
-      speciesId: r['species name'].toLowerCase().replace(/\s+/g, '_'),
+      speciesId: r['species name'],   // use Dutch name directly — no transformation needed
       nl:        r['species name'],
       sci:       r['scientific name'] || '',
       date:      r['date'],
@@ -78,5 +79,5 @@ export function parseWaarnemingCSV(text, filename) {
       permalink: r['link'] || '',
     }));
 
-  return { name, observations };
+  return { name, observations, totalRows: rows.length };
 }

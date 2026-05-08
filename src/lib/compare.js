@@ -41,9 +41,10 @@ export function resolvePeriod(period, customStart, customEnd) {
 function uniqueMap(obs) {
   const m = new Map();
   for (const o of obs) {
-    if (!o.speciesId) continue;
-    if (!m.has(o.speciesId)) m.set(o.speciesId, []);
-    m.get(o.speciesId).push(o);
+    const key = o.speciesId || o.nl;
+    if (!key) continue;
+    if (!m.has(key)) m.set(key, []);
+    m.get(key).push(o);
   }
   return m;
 }
