@@ -6,7 +6,7 @@ export default function Masthead({ lang, onToggleLang }) {
       <header className="bbb-masthead">
         <div className="bbb-masthead-left">
           <BirdIcon />
-          <span className="bbb-logo-text">Better Birding <span>Buddy</span></span>
+          <span className="bbb-logo-text">Waarneming<span>Wizard</span></span>
         </div>
         <button className="bbb-lang-toggle" onClick={onToggleLang}>
           <span className={lang === 'nl' ? 'bbb-lang-active' : 'bbb-lang-inactive'}>NL</span>

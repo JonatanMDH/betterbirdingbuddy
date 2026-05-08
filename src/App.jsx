@@ -19,7 +19,7 @@ export default function App() {
             ? <Compare data={data} onBack={() => setData(null)} />
             : <Home onSubmit={setData} />}
           <footer className="bbb-footer">
-            <span>Better Birding Buddy</span>
+            <span>WaarnemingWizard</span>
             <span>Waarneming.nl CSV-vergelijker</span>
           </footer>
         </div>
