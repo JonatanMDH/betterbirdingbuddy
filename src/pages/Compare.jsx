@@ -13,7 +13,7 @@ export default function Compare({ data, onBack }) {
   const lang = useLang();
   const { me, buddies } = data;
 
-  const [period,      setPeriod]      = useState('last-30');
+  const [period,      setPeriod]      = useState('all-time');
   const [mode,        setMode]        = useState('they-not-me');
   const [customStart, setCustomStart] = useState('');
   const [customEnd,   setCustomEnd]   = useState('');
@@ -111,7 +111,7 @@ function BuddyCard({ buddy, result, lang }) {
         <div style={{ minWidth: 0 }}>
           <div className="bbb-col-name" title={buddy.name}>{buddy.name}</div>
           <div className="bbb-col-sub">
-            {buddy.observations.length} {lang === 'nl' ? 'waarnemingen' : 'observations'}
+            {result.buddyInPeriod} {lang === 'nl' ? 'soorten in periode' : 'species in period'}
           </div>
         </div>
         <div className="bbb-col-count">

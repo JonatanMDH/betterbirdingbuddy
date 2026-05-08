@@ -86,8 +86,10 @@ export function compare({ meObs, buddyObs, start, end, mode, buddyName }) {
 
   return {
     buddyName,
-    total:      species.length,
-    highlights: species.filter(s => (s.rarity||0) >= 3),
-    regular:    species.filter(s => (s.rarity||0) < 3),
+    total:        species.length,
+    highlights:   species.filter(s => (s.rarity||0) >= 3),
+    regular:      species.filter(s => (s.rarity||0) < 3),
+    meInPeriod:   mP.size,
+    buddyInPeriod: bP.size,
   };
 }
