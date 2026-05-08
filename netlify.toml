@@ -1,18 +1,6 @@
-# Netlify configuration for Better Birding Buddy.
-
 [build]
-  command   = "npm run build"
-  publish   = "dist"
-  functions = "netlify/functions"
-
-[build.environment]
-  NODE_VERSION = "20"
-
-# Rewrite /api/* → Netlify Functions, and SPA fallback.
-[[redirects]]
-  from   = "/api/*"
-  to     = "/.netlify/functions/:splat"
-  status = 200
+  command = "npm run build"
+  publish = "dist"
 
 [[redirects]]
   from   = "/*"

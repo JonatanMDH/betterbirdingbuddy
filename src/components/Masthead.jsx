@@ -1,27 +1,18 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 
-export default function Masthead({ tokenOk, lang, onToggleLang }) {
+export default function Masthead({ lang, onToggleLang }) {
   return (
     <>
       <header className="bbb-masthead">
-        <Link to="/" className="bbb-masthead-left">
+        <div className="bbb-masthead-left">
           <BirdIcon />
           <span className="bbb-logo-text">Better Birding <span>Buddy</span></span>
-        </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Link to="/?page=settings" className="bbb-status-link" data-ok={tokenOk}>
-            <span className="bbb-status-dot" data-ok={tokenOk} />
-            {tokenOk
-              ? (lang === 'nl' ? 'Verbonden' : 'Connected')
-              : (lang === 'nl' ? 'Instellen vereist' : 'Setup required')}
-          </Link>
-          <button className="bbb-lang-toggle" onClick={onToggleLang}>
-            <span className={lang === 'nl' ? 'bbb-lang-active' : 'bbb-lang-inactive'}>NL</span>
-            <span className="bbb-lang-sep">|</span>
-            <span className={lang === 'en' ? 'bbb-lang-active' : 'bbb-lang-inactive'}>EN</span>
-          </button>
         </div>
+        <button className="bbb-lang-toggle" onClick={onToggleLang}>
+          <span className={lang === 'nl' ? 'bbb-lang-active' : 'bbb-lang-inactive'}>NL</span>
+          <span className="bbb-lang-sep">|</span>
+          <span className={lang === 'en' ? 'bbb-lang-active' : 'bbb-lang-inactive'}>EN</span>
+        </button>
       </header>
       <div className="bbb-subrule" />
     </>

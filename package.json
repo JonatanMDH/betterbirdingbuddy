@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "type": "module",
   "private": true,
-  "description": "Shareable website for comparing your Waarneming.nl bird observations with friends'.",
   "scripts": {
-    "dev": "netlify dev",
+    "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -15,11 +14,8 @@
     "react-router-dom": "^6.26.0"
   },
   "devDependencies": {
-    "@netlify/functions": "^2.8.0",
     "@vitejs/plugin-react": "^4.3.1",
     "vite": "^5.4.2"
   },
-  "engines": {
-    "node": ">=20"
-  }
+  "engines": { "node": ">=20" }
 }
