@@ -65,15 +65,31 @@ export function parseWaarnemingCSV(text, filename) {
     .trim();
   if (!name || name.length < 2) name = filename.replace(/\.csv$/i, '');
 
+// Normalize any date format to YYYY-MM-DD for consistent string comparison.
+// Waarneming.nl exports dates differently depending on browser locale:
+//   YYYY-MM-DD  (standard, most common)
+//   DD-MM-YYYY  (Dutch locale)
+//   DD-MM-YY    (short Dutch locale)
+function normalizeDate(d) {
+  if (!d) return '';
+  // Already YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d;
+  // DD-MM-YYYY
+  const long = d.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+  if (long) return `${long[3]}-${long[2]}-${long[1]}`;
+  // DD-MM-YY
+  const short = d.match(/^(\d{2})-(\d{2})-(\d{2})$/);
+  if (short) return `20${short[3]}-${short[2]}-${short[1]}`;
+  return d;
+}
+
   const observations = rows
-    // Filter to rows that have a species name and date — don't rely on species group
-    // matching exactly, since Excel re-saves can subtly alter column values
     .filter(r => r['species name'] && r['date'])
     .map(r => ({
-      speciesId: r['species name'],   // use Dutch name directly — no transformation needed
+      speciesId: r['species name'],
       nl:        r['species name'],
       sci:       r['scientific name'] || '',
-      date:      r['date'],
+      date:      normalizeDate(r['date']),
       location:  r['location'] || '',
       rarity:    rarityFromStatus(r['validation status']),
       permalink: r['link'] || '',
